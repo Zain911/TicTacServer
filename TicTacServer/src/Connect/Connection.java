@@ -14,7 +14,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.LoginModel;
 import model.Player;
+import model.Register;
 
 /**
  *
@@ -56,7 +58,6 @@ class ServerHandeler extends Thread {
             outputStream = socket.getOutputStream();
             objectOutputStream = new ObjectOutputStream(outputStream);
             inputStream = socket.getInputStream();
-            obj = new ObjectInputStream(inputStream);
             start();
         } catch (IOException ex) {
             Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
@@ -67,21 +68,23 @@ class ServerHandeler extends Thread {
     public void run() {
         while (true) {
             try {
-                Player player = (Player) obj.readObject();
+                obj = new ObjectInputStream(inputStream);
+
+                LoginModel reg = (LoginModel) obj.readObject();
                 
                 
                 ///////// for testing ///////////
-                System.out.println("id : " + player.getId() + " name : " + player.getName());
-                System.out.println("data of " + player.getName() + " : " + socket);
+                System.out.println("name : " + reg.getUser_name() + " password : " + reg.getUser_password());
+                System.out.println("data of " + " : " + socket);
+               
                 
-                if (player.getName().equals("mohamed")) {
+                /*if (reg.getUserName().equals("Aziza")) {
                     objectOutputStream.writeObject("accept");
                     objectOutputStream.flush();
-                }
-                if (player.getName().equals("ali")) {
+                } else {
                     objectOutputStream.writeObject("refuse");
                     objectOutputStream.flush();
-                }
+                } */
                 /////////////////////
                 
                 
