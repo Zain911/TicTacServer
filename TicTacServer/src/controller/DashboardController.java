@@ -74,5 +74,15 @@ public class DashboardController implements Initializable {
             Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @FXML
+    private void onClick(ActionEvent event) {
+        if(startBtn.isSelected()) {
+            // open connection
+            new Connect.Connection(5000);
+        } else {
+            // close connecgtion
+        }
+    }
     
 }

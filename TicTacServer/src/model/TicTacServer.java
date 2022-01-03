@@ -22,13 +22,9 @@ public class TicTacServer extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-<<<<<<< HEAD
         Parent root = FXMLLoader.load(getClass().getResource("/view/DashboardFXML.fxml"));
         
-=======
-        Parent root = FXMLLoader.load(getClass().getResource("/view/FXMLDocument.fxml"));
  
->>>>>>> df0b3884210af7785ba5579a067e9d70e1fc633c
         Scene scene = new Scene(root);
         
         stage.setScene(scene);

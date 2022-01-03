@@ -9,7 +9,7 @@
 <AnchorPane id="AnchorPane" prefHeight="568.0" prefWidth="535.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DashboardController">
    <children>
       <Label layoutX="181.0" layoutY="26.0" prefHeight="23.0" prefWidth="149.0" style="-fx-font-size: 26;" text="Tic Tac Toe" />
-      <ToggleButton fx:id="startBtn" layoutX="134.0" layoutY="257.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="105.0" text="start" />
+      <ToggleButton fx:id="startBtn" layoutX="134.0" layoutY="257.0" mnemonicParsing="false" onAction="#onClick" prefHeight="32.0" prefWidth="105.0" text="start" />
       <Label fx:id="status" layoutX="310.0" layoutY="260.0" prefHeight="18.0" prefWidth="116.0" style="-fx-font-size: 18;" text="status" />
       <Label fx:id="noOfPlyers" layoutX="134.0" layoutY="307.0" prefHeight="32.0" prefWidth="142.0" style="-fx-font-size: 16;" text="Number of players :" textFill="#28725b" />
       <Label fx:id="onlinePlyers" layoutX="135.0" layoutY="339.0" prefHeight="32.0" prefWidth="142.0" style="-fx-font-size: 16;" text="Online players :" textFill="#28725b" />
