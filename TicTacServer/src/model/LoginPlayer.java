@@ -5,11 +5,13 @@
  */
 package model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author mka
  */
-public class LoginPlayer {
+public class LoginPlayer implements Serializable{
     private String username;
     private  String userPassword;
 
@@ -17,7 +19,10 @@ public class LoginPlayer {
         this.username = username;
         this.userPassword = userPassword;
     }
-
+    public LoginPlayer(){
+        
+    }
+    
     public String getUsername() {
         return username;
     }

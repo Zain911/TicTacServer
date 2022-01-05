@@ -1,11 +1,14 @@
 package model;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable{
     
     private String username;
     private  String userPassword;
-      private boolean isactive;
+    private boolean isactive;
     private int score;
+    private boolean isPasswordCorrect;
     private int numberOfWin;
     private int numberOfLose;
     private  int numberOfDraw;
@@ -43,6 +46,15 @@ public class Player {
         this.numberOfLose = numberOfLose;
         this.numberOfDraw = numberOfDraw;
     }
+
+    public boolean isIsPasswordCorrect() {
+        return isPasswordCorrect;
+    }
+
+    public void setIsPasswordCorrect(boolean isPasswordCorrect) {
+        this.isPasswordCorrect = isPasswordCorrect;
+    }
+    
     
 
     public String getUsername() {
@@ -108,8 +120,6 @@ public class Player {
     public void setIsplaying(boolean isplaying) {
         this.isplaying = isplaying;
     }
-    
-   
 
    
 }

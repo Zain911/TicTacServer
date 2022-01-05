@@ -1,10 +1,6 @@
 package Connect;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+import helper.DataObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -12,11 +8,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.LoginModel;
+import model.LoginPlayer;
 import model.Player;
-import model.Register;
 
 /**
  *
@@ -30,7 +26,7 @@ public class Connection {
         new Thread(() -> {
             try {
                 serverSocket = new ServerSocket(port);
-                while (true) {
+                while (!serverSocket.isClosed()) {
                     Socket s = serverSocket.accept();
                     new ServerHandeler(s);
                 }
@@ -40,7 +36,6 @@ public class Connection {
         }).start();
 
     }
-
 }
 
 class ServerHandeler extends Thread {
@@ -49,49 +44,107 @@ class ServerHandeler extends Thread {
     private ObjectOutputStream objectOutputStream;
     private InputStream inputStream;
     private ObjectInputStream obj;
-    private Socket socket;
 
-    public ServerHandeler(Socket s) {
+    public ServerHandeler(Socket socket) {
         try {
-            socket = s;
-            
-            outputStream = socket.getOutputStream();
-            objectOutputStream = new ObjectOutputStream(outputStream);
-            inputStream = socket.getInputStream();
-            start();
+            if (!socket.isClosed()) {
+                outputStream = socket.getOutputStream();
+                inputStream = socket.getInputStream();
+                start();
+            }
         } catch (IOException ex) {
-            Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("user has left");
         }
     }
 
     @Override
     public void run() {
+
         while (true) {
             try {
+                DataObject.getConnection();
                 obj = new ObjectInputStream(inputStream);
+                Object object = obj.readObject();
+                
+                if (object instanceof LoginPlayer) {
+                    LoginPlayer loginModel = (LoginPlayer) object;
+                    checkLogin(loginModel);
+                } else if (object instanceof Player) {
+                    Player registerModel = (Player) object;
+                    addRegisterData(registerModel);
+                }
 
-                LoginModel reg = (LoginModel) obj.readObject();
-                
-                
-                ///////// for testing ///////////
-                System.out.println("name : " + reg.getUser_name() + " password : " + reg.getUser_password());
-                System.out.println("data of " + " : " + socket);
-               
-                
-                /*if (reg.getUserName().equals("Aziza")) {
-                    objectOutputStream.writeObject("accept");
-                    objectOutputStream.flush();
-                } else {
-                    objectOutputStream.writeObject("refuse");
-                    objectOutputStream.flush();
-                } */
-                /////////////////////
-                
-                
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
+    private void checkLogin(LoginPlayer loginPlayer) {
+        try {
+
+            Player player = DataObject.selectPlayerForLogin(loginPlayer);
+            if (player != null) {
+                if (player.isIsPasswordCorrect()) {
+                    player.setIsactive(true);
+                    DataObject.updataUser(player);
+                    sendAcceptLogin(player, "");
+                } else {
+                    sendAcceptLogin(null, "PasswordNotCorrect");
+                }
+            } else {
+                sendAcceptLogin(null, "NotFound");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void addRegisterData(Player player) {
+        Player newPlayer = null;
+        String response = "";
+        try {
+            newPlayer = DataObject.registerFunctionality(player);
+
+            if (newPlayer != null) {
+                response = "Accept";
+            } else {
+                response = "Error";
+            }
+
+        } catch (SQLException ex) {
+            response = "User is Already Exist";
+        }
+        try {
+            objectOutputStream = new ObjectOutputStream(outputStream);
+            
+            if (response.equals("Accept")) {
+                objectOutputStream.writeObject(newPlayer);
+            } else {
+                objectOutputStream.writeObject(response);
+            }
+            objectOutputStream.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void sendAcceptLogin(Player player, String status) {
+        try {
+            objectOutputStream = new ObjectOutputStream(outputStream);
+            try {
+                if (player != null) {
+                    objectOutputStream.writeObject(player);
+                } else {
+                    objectOutputStream.writeObject(status);
+                }
+                objectOutputStream.flush();
+
+            } catch (IOException ex) {
+                Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
