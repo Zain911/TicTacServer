@@ -151,10 +151,9 @@ public class DashboardController implements Initializable {
         stopServerButton.setDisable(isStartServer);
         isStartServer = !isStartServer;
         try {
-            clients.forEach((client) -> {
-                client.closeConnection();
-
-            });
+            for (int i = 0; i < clients.size(); i++) {
+                clients.get(i).closeConnection();
+            }
             clients.clear();
             socketAccpetListener.stop();
             serverSocket.close();
