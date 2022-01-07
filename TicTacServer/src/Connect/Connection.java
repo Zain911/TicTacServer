@@ -1,6 +1,7 @@
 package Connect;
 
 import helper.DataObject;
+import static helper.DataObject.selectOnlinePlyer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -9,6 +10,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.LoginPlayer;
@@ -19,16 +21,16 @@ import model.Player;
  * @author PCM
  */
 public class Connection {
-
+    
     private ServerSocket serverSocket;
-
+    private Socket mySocket;
     public Connection(int port) {
         new Thread(() -> {
             try {
                 serverSocket = new ServerSocket(port);
                 while (!serverSocket.isClosed()) {
-                    Socket s = serverSocket.accept();
-                    new ServerHandeler(s);
+                    mySocket = serverSocket.accept();
+                    new ServerHandeler(mySocket);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
@@ -40,10 +42,10 @@ public class Connection {
 
 class ServerHandeler extends Thread {
 
-    private OutputStream outputStream;
-    private ObjectOutputStream objectOutputStream;
-    private InputStream inputStream;
-    private ObjectInputStream obj;
+    private static OutputStream outputStream;
+    private static ObjectOutputStream objectOutputStream;
+    private static InputStream inputStream;
+    private static ObjectInputStream objectInputStream;
 
     public ServerHandeler(Socket socket) {
         try {
@@ -63,15 +65,20 @@ class ServerHandeler extends Thread {
         while (true) {
             try {
                 DataObject.getConnection();
-                obj = new ObjectInputStream(inputStream);
-                Object object = obj.readObject();
-                
+                objectInputStream = new ObjectInputStream(inputStream);
+                Object object = objectInputStream.readObject();
+
                 if (object instanceof LoginPlayer) {
                     LoginPlayer loginModel = (LoginPlayer) object;
                     checkLogin(loginModel);
                 } else if (object instanceof Player) {
                     Player registerModel = (Player) object;
                     addRegisterData(registerModel);
+                }else if (object instanceof String){
+                    if (object.equals("onlinePlayers")) {
+                        getAllOnlineUsers();
+                        System.out.println("getAllOnlineUsers");
+                    }
                 }
 
             } catch (IOException | ClassNotFoundException ex) {
@@ -117,7 +124,7 @@ class ServerHandeler extends Thread {
         }
         try {
             objectOutputStream = new ObjectOutputStream(outputStream);
-            
+
             if (response.equals("Accept")) {
                 objectOutputStream.writeObject(newPlayer);
             } else {
@@ -146,5 +153,28 @@ class ServerHandeler extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void getAllOnlineUsers() {
+        try {
+            ArrayList<Player> playerList = selectOnlinePlyer();
+            sendListToClient(playerList);
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void sendListToClient(ArrayList<Player> playerList) {
+        if (playerList != null) {
+            try {   
+                objectOutputStream=new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(playerList);
+                objectOutputStream.flush();
+                System.out.println("data is flushed");
+            } catch (IOException ex) {
+                Logger.getLogger(ServerHandeler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else
+            System.out.println("don't found data");
     }
 }

@@ -1,12 +1,5 @@
 package controller;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,11 +14,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-/**
- * FXML Controller class
- *
- * @author Mohamed Galal
- */
+
 public class DashboardController implements Initializable {
 
     @FXML
@@ -79,9 +68,12 @@ public class DashboardController implements Initializable {
     private void onClick(ActionEvent event) {
         if(startBtn.isSelected()) {
             // open connection
+            startBtn.setText("stop");
             new Connect.Connection(5000);
         } else {
             // close connecgtion
+            startBtn.setText("start");
+            
         }
     }
     

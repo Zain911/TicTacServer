@@ -5,13 +5,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.LoginPlayer;
 import model.Player;
-import model.RegisterPlayer;
 import org.apache.derby.jdbc.ClientDriver;
 
 /**
@@ -214,9 +212,8 @@ public class DataObject {
         return result;
 
     }*/
-    public static ArrayList<Player> selectOnlinePlyer() {
+    public static ArrayList<Player> selectOnlinePlyer() throws SQLException {
         System.out.println("hhh");
-        try {
             PreparedStatement pst = con.prepareStatement("select *from PLAYERINFO where playerStatus =true");
 
             ResultSet rs = pst.executeQuery();
@@ -226,11 +223,6 @@ public class DataObject {
                         rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
 
             }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DataObject.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
 
         return onLineArrayOfPlayer;
 
