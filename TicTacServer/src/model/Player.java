@@ -6,19 +6,19 @@ public class Player implements Serializable{
     
     private String username;
     private  String userPassword;
-    private boolean isactive;
+    private int status;
     private int score;
     private boolean isPasswordCorrect;
     private int numberOfWin;
     private int numberOfLose;
     private  int numberOfDraw;
-  
     private boolean isplaying;
+    private String requestStatus;
 
-    public Player(String username, String userPassword, boolean isactive, int numberOfWin, int numberOfLose, int numberOfDraw) {
+    public Player(String username, String userPassword, int status, int numberOfWin, int numberOfLose, int numberOfDraw) {
         this.username = username;
         this.userPassword = userPassword;
-        this.isactive = isactive;
+        this.status = status;
         this.numberOfWin = numberOfWin;
         this.numberOfLose = numberOfLose;
         this.numberOfDraw = numberOfDraw;
@@ -26,21 +26,21 @@ public class Player implements Serializable{
 
    
 
-    public Player(String username, String userPassword, int score, int numberOfWin, int numberOfLose, int numberOfDraw, boolean isactive, boolean isplaying) {
+    public Player(String username, String userPassword, int score, int numberOfWin, int numberOfLose, int numberOfDraw, int status, boolean isplaying) {
         this.username = username;
         this.userPassword = userPassword;
         this.score = score;
         this.numberOfWin = numberOfWin;
         this.numberOfLose = numberOfLose;
         this.numberOfDraw = numberOfDraw;
-        this.isactive = isactive;
+        this.status = status;
         this.isplaying = isplaying;
     }
 
-    public Player(String username, String userPassword, boolean isactive, int score, int numberOfWin, int numberOfLose, int numberOfDraw) {
+    public Player(String username, String userPassword, int status, int score, int numberOfWin, int numberOfLose, int numberOfDraw) {
         this.username = username;
         this.userPassword = userPassword;
-        this.isactive = isactive;
+        this.status = status;
         this.score = score;
         this.numberOfWin = numberOfWin;
         this.numberOfLose = numberOfLose;
@@ -54,9 +54,15 @@ public class Player implements Serializable{
     public void setIsPasswordCorrect(boolean isPasswordCorrect) {
         this.isPasswordCorrect = isPasswordCorrect;
     }
-    
-    
 
+    public String getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(String requestStatus) {
+        this.requestStatus = requestStatus;
+    }
+    
     public String getUsername() {
         return username;
     }
@@ -105,12 +111,12 @@ public class Player implements Serializable{
         this.numberOfDraw = numberOfDraw;
     }
 
-    public boolean isIsactive() {
-        return isactive;
+    public int getStatus() {
+        return status;
     }
 
-    public void setIsactive(boolean isactive) {
-        this.isactive = isactive;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public boolean isIsplaying() {
@@ -120,6 +126,6 @@ public class Player implements Serializable{
     public void setIsplaying(boolean isplaying) {
         this.isplaying = isplaying;
     }
-
-   
+    
+ 
 }

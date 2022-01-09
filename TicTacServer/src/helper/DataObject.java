@@ -20,6 +20,7 @@ public class DataObject {
 
     public static Connection con;
     public static ArrayList<Player> arrayOfPlayers = new ArrayList<>();
+    public static int getAllPlayers;
 
     public static ArrayList<Player> onLineArrayOfPlayer = new ArrayList<>();
     public static ArrayList<Player> offLineArrayOfPlayer = new ArrayList<>();
@@ -46,9 +47,9 @@ public class DataObject {
 
             while (rs.next()) {
                 selectedPlayer = new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6));
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6));
             }
-            System.out.println("nameeeed" + selectedPlayer.getUsername());
+            System.out.println("named" + selectedPlayer.getUsername());
 
         } catch (SQLException ex) {
             Logger.getLogger(DataObject.class.getName()).log(Level.SEVERE, null, ex);
@@ -61,12 +62,12 @@ public class DataObject {
     public static ArrayList<Player> selectAllPlayers() {
         try {
             PreparedStatement pst = con.prepareStatement("select * from PLAYERINFO");
-
             ResultSet rs = pst.executeQuery();
+            arrayOfPlayers.clear();
 
             while (rs.next()) {
                 arrayOfPlayers.add(new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4) * 5, rs.getInt(4), rs.getInt(5), rs.getInt(6)));
+                        rs.getInt(3), rs.getInt(4) * 5, rs.getInt(4), rs.getInt(5), rs.getInt(6)));
             }
 
         } catch (SQLException ex) {
@@ -84,7 +85,7 @@ public class DataObject {
 
             while (rs.next()) {
                 ArrayOfPlayerByOrderNumberOfWinsDecs.add(new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
             }
 
         } catch (SQLException ex) {
@@ -102,7 +103,7 @@ public class DataObject {
 
             while (rs.next()) {
                 ArrayOfPlayerByOrderScoreDecs.add(new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
             }
 
         } catch (SQLException ex) {
@@ -118,7 +119,7 @@ public class DataObject {
 
         pst.setString(1, player.getUsername());
         pst.setString(2, player.getUserPassword());
-        pst.setBoolean(3, player.isIsactive());
+        pst.setInt(3, player.getStatus());
 
         pst.setInt(4, player.getNumberOfWin());
         pst.setInt(5, player.getNumberOfLose());
@@ -126,8 +127,9 @@ public class DataObject {
 
         pst.execute();
         result = true;
-
-        System.out.println(player.getUsername() + "hhhhhhhhhhh");
+        //arrayOfPlayers.clear();
+        //arrayOfPlayers = selectAllPlayers();
+        System.out.println(player.getUsername() + "");
         System.out.println(player.getUserPassword());
         // con.close();
         return result;
@@ -136,13 +138,13 @@ public class DataObject {
     public static Player selectTopPlayers() {
         Player topPlayer = null;
         try {
-            PreparedStatement pst = con.prepareStatement("select * from PLAYERINFO where NUMBEROFWIN= (select Max(NUMBEROFWIN) from PLAYERDATA )");
+            PreparedStatement pst = con.prepareStatement("select * from PLAYERINFO where NUMBEROFWIN = (select Max(NUMBEROFWIN) from PLAYERINFO )");
 
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
                 topPlayer = new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6));
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6));
 
             }
 
@@ -162,7 +164,8 @@ public class DataObject {
             pst.setString(1, player.getUsername());
 
             result = pst.executeUpdate();
-
+            arrayOfPlayers.clear();
+            arrayOfPlayers = selectAllPlayers();
         } catch (SQLException ex) {
             Logger.getLogger(DataObject.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -177,11 +180,12 @@ public class DataObject {
         try {
             PreparedStatement pst = con.prepareStatement("UPDATE PLAYERINFO set playerStatus=? where PLAYERNAME=?");
 
-            pst.setBoolean(1, player.isIsactive());
+            pst.setInt(1, player.getStatus());
             pst.setString(2, player.getUsername());
 
             result = pst.executeUpdate();
-
+            arrayOfPlayers.clear();
+            arrayOfPlayers = selectAllPlayers();
         } catch (SQLException ex) {
             Logger.getLogger(DataObject.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -212,32 +216,33 @@ public class DataObject {
         return result;
 
     }*/
-    public static ArrayList<Player> selectOnlinePlyer() throws SQLException {
-        System.out.println("hhh");
-            PreparedStatement pst = con.prepareStatement("select *from PLAYERINFO where playerStatus =true");
+    public static ArrayList<Player> selectOnlinePlyer(String playerName) throws SQLException {
+      
+        PreparedStatement pst = con.prepareStatement("select *from PLAYERINFO where playerStatus =1 OR playerStatus =2 AND playerName != ?");
+        pst.setString(1, playerName);
+        ResultSet rs = pst.executeQuery();
+        onLineArrayOfPlayer.clear();
 
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                System.out.println("ffffffff");
-                onLineArrayOfPlayer.add(new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
+        while (rs.next()) {
+            
+            onLineArrayOfPlayer.add(new Player(rs.getString(1), rs.getString(2),
+                    rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
 
-            }
+        }
 
         return onLineArrayOfPlayer;
-
     }
 
     public static ArrayList<Player> selectOfflinePlayer() {
 
         try {
-            PreparedStatement pst = con.prepareStatement("select * from PLAYERINFO where playerStatus =false");
+            PreparedStatement pst = con.prepareStatement("select * from PLAYERINFO where playerStatus =0");
 
             ResultSet rs = pst.executeQuery();
-
+            offLineArrayOfPlayer.clear();
             while (rs.next()) {
                 offLineArrayOfPlayer.add(new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)));
             }
 
         } catch (SQLException ex) {
@@ -248,23 +253,18 @@ public class DataObject {
         return offLineArrayOfPlayer;
     }
 
-    public static int updataUser(Player player) {
+    public static int updataUser(Player player) throws SQLException {
         int result = 0;
-        try {
-            PreparedStatement pst = con.prepareStatement("UPDATE PLAYERINFO set playerPassword=?,playerStatus=?,NUMBEROFWIN=? ,NUMBEROFLOSE=?,NUMBEROFDRAW=?where  playerName=?");
-            pst.setString(1, player.getUserPassword());
-            pst.setBoolean(2, player.isIsactive());
-            pst.setInt(3, player.getNumberOfWin());
-            pst.setInt(4, player.getNumberOfLose());
-            pst.setInt(5, player.getNumberOfDraw());
-            pst.setString(6, player.getUsername());
+        PreparedStatement pst = con.prepareStatement("UPDATE PLAYERINFO set playerPassword=?,playerStatus=?,NUMBEROFWIN=? ,NUMBEROFLOSE=?,NUMBEROFDRAW=?where  playerName=?");
+        pst.setString(1, player.getUserPassword());
+        pst.setInt(2, player.getStatus());
+        pst.setInt(3, player.getNumberOfWin());
+        pst.setInt(4, player.getNumberOfLose());
+        pst.setInt(5, player.getNumberOfDraw());
+        pst.setString(6, player.getUsername());
 
-            result = pst.executeUpdate();
+        result = pst.executeUpdate();
 
-        } catch (SQLException ex) {
-            Logger.getLogger(DataObject.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
         return result;
     }
 
@@ -278,7 +278,7 @@ public class DataObject {
         if (rs != null) {
             while (rs.next()) {
                 playerFounded = new Player(rs.getString(1), rs.getString(2),
-                        rs.getBoolean(3), rs.getInt(4) * 5, rs.getInt(4), rs.getInt(5), rs.getInt(6));
+                        rs.getInt(3), rs.getInt(4) * 5, rs.getInt(4), rs.getInt(5), rs.getInt(6));
 
                 if (rs.getString(2).equals(player.getUserPassword())) {
                     playerFounded.setIsPasswordCorrect(true);
@@ -307,4 +307,39 @@ public class DataObject {
         return registerPlayer;
     }
 
+    public static int numberOfWin() throws SQLException {
+        Integer sumOfWin = 0;
+        PreparedStatement pst = con.prepareStatement("select sum(NUMBEROFWIN) from PLAYERINFO");
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            int count = rs.getInt(1);
+            sumOfWin += count;
+        }
+        return sumOfWin;
+
+    }
+
+    public static int numberOfLose() throws SQLException {
+        Integer sumOfLose = 0;
+        PreparedStatement pst = con.prepareStatement("select sum(NUMBEROFLose) from PLAYERINFO");
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            int count = rs.getInt(1);
+            sumOfLose += count;
+        }
+        return sumOfLose;
+
+    }
+    
+    public static int numberOfDraw() throws SQLException {
+        Integer sumOfDraw = 0;
+        PreparedStatement pst = con.prepareStatement("select sum(NUMBEROFDraw) from PLAYERINFO");
+        ResultSet rs = pst.executeQuery();
+        while (rs.next()) {
+            int count = rs.getInt(1);
+            sumOfDraw += count;
+        }
+        return sumOfDraw;
+
+    }
 }
