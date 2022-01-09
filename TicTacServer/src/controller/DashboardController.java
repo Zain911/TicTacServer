@@ -91,7 +91,6 @@ public class DashboardController implements Initializable {
 
     public void getPieChart() {
 
-        
         try {
             int noOfPlayers = DataObject.selectAllPlayers().size();
             int noOfOnlinePlayers = DataObject.selectOnlinePlyer("").size();
@@ -123,7 +122,6 @@ public class DashboardController implements Initializable {
         } catch (SQLException ex) {
             Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
     }
 
     

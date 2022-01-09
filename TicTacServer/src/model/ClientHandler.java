@@ -104,6 +104,7 @@ public class ClientHandler extends Thread {
                 }
 
             } catch (Exception ex) {
+                closeConnection();
 
                 /* try {
                     socket.close();
